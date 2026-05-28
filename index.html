@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Quiniela 2026">
 <meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" id="pwa-manifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -268,7 +269,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
     <h1>QUINIELA<br><span>AMISTOSOS</span></h1>
     <p class="hero-sub">Amistosos previos · 23 partidos · Pronóstico privado</p>
     <div class="hero-sedes">
-      <span class="sede-flag">🇺🇸</span> Guatemala &nbsp;·&nbsp;
+      <span class="sede-flag">🇬🇹</span> Guatemala &nbsp;·&nbsp;
       <span class="sede-flag">🌎</span> Selecciones mundialistas &nbsp;·&nbsp;
       <span class="sede-flag">🏟️</span> Amistosos
     </div>
@@ -293,13 +294,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- PWA INSTALL BANNER Android/Chrome (mejora 2) -->
+<!-- PWA INSTALL BANNER Android/Chrome -->
 <div class="install-banner" id="install-banner">
   <div class="install-inner">
     <div class="install-icon">⚽</div>
     <div class="install-text">
-      <div class="install-title">Agregar a tu pantalla de inicio</div>
-      <div class="install-sub">Accede sin abrir el navegador, como una app</div>
+      <div class="install-title">Agregar a pantalla de inicio</div>
+      <div class="install-sub">Ábrela como app, sin necesidad del navegador</div>
     </div>
     <div class="install-actions">
       <button class="install-yes" onclick="installPWA()">Instalar</button>
@@ -308,17 +309,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
   </div>
 </div>
 
-<!-- iOS INSTALL TIP Safari (mejora 2) -->
+<!-- iOS INSTALL TIP Safari -->
 <div class="ios-tip" id="ios-tip">
   <div class="ios-tip-title">
     Instalar en iPhone / iPad
     <button class="ios-close" onclick="document.getElementById('ios-tip').classList.remove('show')">✕</button>
   </div>
   <div class="ios-tip-body">
-    1. Toca el ícono <span>Compartir</span> (cuadro con flecha ↑) en Safari<br>
-    2. Toca <span>"Agregar a pantalla de inicio"</span><br>
-    3. Toca <span>Agregar</span> — listo, ya aparece como app en tu celular
+    1. Toca el ícono <span>Compartir ↑</span> en la barra de Safari<br>
+    2. Desliza y toca <span>"Agregar a pantalla de inicio"</span><br>
+    3. Toca <span>Agregar</span> — aparecerá el ícono en tu pantalla
   </div>
+</div>
+
+<!-- BOTÓN FIJO "Instalar app" en el hero (siempre visible) -->
+<div id="pwa-hero-btn-wrap" style="display:none">
+  <!-- Se inyecta en el hero por JS -->
 </div>
 
 <!-- ══════════════════ PAGE: FORM ══════════════════ -->
@@ -493,7 +499,7 @@ const MATCHES = [
     "visita": "Ghana",
     "date": "2 jun",
     "venue": "Europa",
-    "lf": "🏴",
+    "lf": "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
     "vf": "🇬🇭"
   },
   {
@@ -1525,27 +1531,96 @@ function scrollToFirstMissing() {
 // ══════════════════════════════════════════
 //  MEJORA 2: PWA / INSTALAR EN PANTALLA
 // ══════════════════════════════════════════
+
+// -- Inyectar manifest dinámicamente (necesario para beforeinstallprompt) --
+(function injectManifest() {
+  const manifest = {
+    name: "Quiniela Amistosos 2026",
+    short_name: "Quiniela 2026",
+    description: "Pronósticos amistosos previos al Mundial 2026",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#1A1A2E",
+    theme_color: "#1A1A2E",
+    orientation: "portrait",
+    icons: [
+      { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231A1A2E'/><text y='155' x='16' font-size='160'>⚽</text></svg>", sizes: "192x192", type: "image/svg+xml" },
+      { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%231A1A2E'/><text y='420' x='40' font-size='440'>⚽</text></svg>", sizes: "512x512", type: "image/svg+xml" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const link = document.getElementById('pwa-manifest');
+  if (link) link.href = url;
+})();
+
+// -- Registrar Service Worker mínimo (requerido por Chrome para mostrar el prompt) --
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => e.waitUntil(clients.claim()));
+    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response(''))));
+  `;
+  const swBlob = new Blob([swCode], {type:'text/javascript'});
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
 let deferredInstallPrompt = null;
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredInstallPrompt = e;
-  // Solo mostrar si no lo ha descartado antes
+  showInstallButton();
   if (!localStorage.getItem('pwa_dismissed')) {
-    setTimeout(() => {
-      document.getElementById('install-banner').classList.add('show');
-    }, 3000);
+    setTimeout(() => document.getElementById('install-banner').classList.add('show'), 2000);
   }
 });
 
+window.addEventListener('appinstalled', () => {
+  hideInstallButton();
+  deferredInstallPrompt = null;
+  toast('✅ App instalada en tu pantalla de inicio');
+});
+
+function showInstallButton() {
+  // Agregar botón en el hero si no existe
+  if (!document.getElementById('hero-install-btn')) {
+    const heroInner = document.querySelector('.hero-inner');
+    if (heroInner) {
+      const btn = document.createElement('button');
+      btn.id = 'hero-install-btn';
+      btn.innerHTML = '📲 Agregar a pantalla de inicio';
+      btn.onclick = installPWA;
+      btn.style.cssText = 'margin-top:.75rem;background:rgba(245,166,35,.18);border:1px solid rgba(245,166,35,.4);color:var(--gold);border-radius:99px;padding:7px 18px;font-size:11px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.5px;display:block;width:100%;max-width:260px;margin-left:auto;margin-right:auto';
+      heroInner.appendChild(btn);
+    }
+  }
+  const b = document.getElementById('hero-install-btn');
+  if (b) b.style.display = 'block';
+}
+
+function hideInstallButton() {
+  const b = document.getElementById('hero-install-btn');
+  if (b) b.style.display = 'none';
+  document.getElementById('install-banner').classList.remove('show');
+}
+
 function installPWA() {
   document.getElementById('install-banner').classList.remove('show');
-  if (!deferredInstallPrompt) return;
-  deferredInstallPrompt.prompt();
-  deferredInstallPrompt.userChoice.then(r => {
-    if (r.outcome === 'accepted') toast('¡App instalada!');
-    deferredInstallPrompt = null;
-  });
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(r => {
+      if (r.outcome === 'accepted') toast('✅ Instalando...');
+      deferredInstallPrompt = null;
+      hideInstallButton();
+    });
+  } else if (isIOS()) {
+    document.getElementById('ios-tip').classList.add('show');
+  } else {
+    // Fallback: mostrar instrucciones genéricas
+    toast('Abre el menú del navegador → "Agregar a pantalla de inicio"');
+  }
 }
 
 function dismissInstall() {
@@ -1553,18 +1628,25 @@ function dismissInstall() {
   localStorage.setItem('pwa_dismissed', '1');
 }
 
-// Detectar iOS para mostrar instrucciones manuales
 function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 }
 function isInStandaloneMode() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  return window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
 }
 
 window.addEventListener('load', () => {
-  if (isIOS() && !isInStandaloneMode() && !localStorage.getItem('ios_tip_dismissed')) {
-    setTimeout(() => document.getElementById('ios-tip').classList.add('show'), 3500);
-    localStorage.setItem('ios_tip_dismissed', '1');
+  // Si ya está instalada como app, ocultar todo
+  if (isInStandaloneMode()) { hideInstallButton(); return; }
+
+  // iOS: mostrar botón en hero siempre (no hay beforeinstallprompt en Safari)
+  if (isIOS()) {
+    showInstallButton();
+    // Solo mostrar tip la primera vez
+    if (!localStorage.getItem('ios_tip_shown')) {
+      setTimeout(() => document.getElementById('ios-tip').classList.add('show'), 3000);
+      localStorage.setItem('ios_tip_shown', '1');
+    }
   }
 });
 
