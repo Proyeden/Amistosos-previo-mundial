@@ -222,6 +222,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 .sim-pts-gain.gain-0{background:#f1f5f9;color:#94a3b8}
 .sim-no-picks{padding:10px 12px;font-size:11px;color:var(--muted);text-align:center;font-style:italic}
 
+
+/* ── AJUSTE MÓVIL DEL SIMULADOR ── */
+.sim-input-row{flex-wrap:wrap}
+.sim-teams-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
+.sim-action-line{display:flex;justify-content:center;width:100%;margin-top:4px}
+@media(max-width:480px){
+  .sim-input-row{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:10px 12px}
+  .sim-teams-line{justify-content:center}
+  .sim-label{white-space:normal;text-align:center;font-size:10px;max-width:92px;line-height:1.2}
+  .sim-score-box{width:44px;height:38px;flex-shrink:0}
+  .sim-btn{width:100%;padding:11px 14px;font-size:12px;margin-top:2px}
+  .sim-results-header{display:block;text-align:center}
+  .sim-results-hint{display:block;margin-top:3px}
+}
+
 /* ── SCORING LEGEND ── */
 .scoring-legend{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;overflow:hidden;box-shadow:var(--shadow)}
 .scoring-legend-head{padding:8px 14px;background:linear-gradient(90deg,var(--navy),var(--navy3));display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
@@ -1699,9 +1714,9 @@ function buildUpcoming() {
           </div>
           <div style="padding:0 12px 0;border-top:1px solid var(--border)">
             <div style="display:flex;align-items:center;justify-content:flex-end;padding:6px 0">
-              <span class="upcoming-expand-hint" style="color:var(--gold)" onclick="event.stopPropagation();toggleSimulator(${m.id})">
+              <button type="button" class="upcoming-expand-hint" data-sim-toggle="${m.id}" style="color:var(--gold);background:none;border:none;font-family:inherit;cursor:pointer">
                 🧮 Simular puntos <span class="upcoming-chevron" id="simchev-${m.id}">▼</span>
-              </span>
+              </button>
             </div>
           </div>
           <div class="simulator-card" id="sim-${m.id}" style="display:none">
@@ -1767,50 +1782,69 @@ function toggleUpcomingPicks(matchId) {
 function buildSimulatorInner(m) {
   return `<div class="simulator-header">
       <span class="simulator-title">🧮 Simulador de puntos · ${m.lf} vs ${m.vf}</span>
-      <button class="simulator-close" onclick="toggleSimulator(${m.id})">✕</button>
+      <button type="button" class="simulator-close" data-sim-toggle="${m.id}">✕</button>
     </div>
     <div class="sim-input-row">
-      <span class="sim-label">${m.lf} ${m.local}</span>
-      <input class="sim-score-box" type="number" id="simgl-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric">
-      <span class="sim-dash">–</span>
-      <input class="sim-score-box" type="number" id="simgv-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric">
-      <span class="sim-label">${m.visita} ${m.vf}</span>
-      <button class="sim-btn" onclick="runSimulation(${m.id})">Calcular</button>
+      <div class="sim-teams-line">
+        <span class="sim-label">${m.lf} ${m.local}</span>
+        <input class="sim-score-box" type="number" id="simgl-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric" data-sim-input="${m.id}">
+        <span class="sim-dash">–</span>
+        <input class="sim-score-box" type="number" id="simgv-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric" data-sim-input="${m.id}">
+        <span class="sim-label">${m.visita} ${m.vf}</span>
+      </div>
+      <div class="sim-action-line">
+        <button type="button" class="sim-btn" data-sim-calc="${m.id}">Calcular</button>
+      </div>
     </div>
     <div class="sim-results" id="simresults-${m.id}"></div>`;
 }
 
 function toggleSimulator(matchId) {
-  const card = document.getElementById('sim-' + matchId);
-  const chev = document.getElementById('simchev-' + matchId);
+  const id = String(matchId);
+  const card = document.getElementById('sim-' + id);
+  const chev = document.getElementById('simchev-' + id);
   if (!card) return;
   const isOpen = card.style.display !== 'none';
   card.style.display = isOpen ? 'none' : 'block';
   if (!isOpen) {
-    const m = MATCHES.find(x => String(x.id) === String(matchId));
+    const m = MATCHES.find(x => String(x.id) === id);
     if (m) card.innerHTML = buildSimulatorInner(m);
   }
   if (chev) chev.classList.toggle('open', !isOpen);
 }
 
 function runSimulation(matchId) {
-  const gl = document.getElementById('simgl-' + matchId)?.value;
-  const gv = document.getElementById('simgv-' + matchId)?.value;
-  if (gl === '' || gv === '') return toast('Ingresa el resultado simulado');
+  const id = String(matchId);
+  const glEl = document.getElementById('simgl-' + id);
+  const gvEl = document.getElementById('simgv-' + id);
+  const gl = glEl ? glEl.value : '';
+  const gv = gvEl ? gvEl.value : '';
+  const resultsContainer = document.getElementById('simresults-' + id);
+  const m = MATCHES.find(x => String(x.id) === id);
 
-  const m = MATCHES.find(x => String(x.id) === String(matchId));
-  const resultsContainer = document.getElementById('simresults-' + matchId);
-  if (!m || !resultsContainer) return;
+  if (!resultsContainer) return toast('No se encontró el panel del simulador');
+  if (!m) {
+    resultsContainer.innerHTML = `<div class="sim-no-picks">No se encontró este partido en MATCHES.</div>`;
+    return;
+  }
+  if (gl === '' || gv === '') {
+    resultsContainer.innerHTML = `<div class="sim-no-picks">Ingresa ambos goles para calcular.</div>`;
+    return toast('Ingresa el resultado simulado');
+  }
+  if (!Array.isArray(parts) || parts.length === 0) {
+    resultsContainer.innerHTML = `<div class="sim-no-picks">Aún no se han cargado participantes desde Firebase.</div>`;
+    return;
+  }
 
   const simParticipants = parts
     .filter(p => {
-      const pk = getPickForMatch(p, matchId);
-      return pk && pk.gl !== '' && pk.gv !== '';
+      const pk = getPickForMatch(p, id);
+      return pk && pk.gl !== '' && pk.gv !== '' && pk.gl != null && pk.gv != null;
     })
     .map(p => {
-      const pk = getPickForMatch(p, matchId);
+      const pk = getPickForMatch(p, id);
       const pts = calcPoints(pk.gl, pk.gv, gl, gv);
-      return { ...p, simPts: pts, pickGl: pk.gl, pickGv: pk.gv };
+      return { ...p, simPts: pts ?? 0, pickGl: pk.gl, pickGv: pk.gv };
     });
 
   if (!simParticipants.length) {
@@ -1836,7 +1870,7 @@ function runSimulation(matchId) {
   };
 
   let html = `<div class="sim-results-header">
-    <span class="sim-results-title">Resultado simulado: ${m.lf} ${gl} – ${gv} ${m.vf}</span>
+    <span class="sim-results-title">Resultado simulado: ${m.lf} ${safeHtml(gl)} – ${safeHtml(gv)} ${m.vf}</span>
     <span class="sim-results-hint">Simulación temporal</span>
   </div>`;
 
@@ -1850,7 +1884,7 @@ function runSimulation(matchId) {
         <div class="sim-av" style="background:${av.bg};color:${av.c}">${ini}</div>
         <div>
           <div class="sim-name">${safeHtml(p.name)}${isMe?' 👤':''}</div>
-          <div style="font-size:10px;color:var(--muted)">Pronóstico: ${p.pickGl} – ${p.pickGv}</div>
+          <div style="font-size:10px;color:var(--muted)">Pronóstico: ${safeHtml(p.pickGl)} – ${safeHtml(p.pickGv)}</div>
         </div>
       </div>
       <div class="sim-pts-wrap">
@@ -1868,6 +1902,32 @@ function runSimulation(matchId) {
 
   resultsContainer.innerHTML = html;
 }
+
+// Delegación de eventos para que funcione aunque el HTML se regenere con Firebase.
+document.addEventListener('click', function(ev) {
+  const toggleBtn = ev.target.closest('[data-sim-toggle]');
+  if (toggleBtn) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    toggleSimulator(toggleBtn.getAttribute('data-sim-toggle'));
+    return;
+  }
+  const calcBtn = ev.target.closest('[data-sim-calc]');
+  if (calcBtn) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    runSimulation(calcBtn.getAttribute('data-sim-calc'));
+  }
+});
+
+document.addEventListener('input', function(ev) {
+  const matchId = ev.target.getAttribute && ev.target.getAttribute('data-sim-input');
+  if (!matchId) return;
+  const gl = document.getElementById('simgl-' + matchId)?.value;
+  const gv = document.getElementById('simgv-' + matchId)?.value;
+  if (gl !== '' && gv !== '') runSimulation(matchId);
+});
+
 
 // ── TOAST ──
 function toast(msg) {
