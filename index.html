@@ -884,6 +884,7 @@ function persist() {
   // Fallback local si Firebase todavía no está configurado.
   localStorage.setItem('qm26_v4', JSON.stringify(parts));
   syncBadges();
+  buildUpcoming();
 }
 
 function syncBadges() {
@@ -1623,36 +1624,67 @@ function getMatchDate(dateStr) {
   return DATE_MAP[dateStr] || null;
 }
 
+function sameCalendarDay(a, b) {
+  return a && b &&
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+}
+
+function getTodayGuatemala() {
+  // Evita que el navegador, GitHub Pages o una zona horaria distinta mueva la fecha.
+  // La quiniela se maneja con fecha de Guatemala.
+  const partsGT = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Guatemala',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date());
+  const y = Number(partsGT.find(p => p.type === 'year').value);
+  const m = Number(partsGT.find(p => p.type === 'month').value) - 1;
+  const d = Number(partsGT.find(p => p.type === 'day').value);
+  return new Date(y, m, d);
+}
+
+function getUpcomingMatchesWindow() {
+  const today = getTodayGuatemala();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const todayAndTomorrow = MATCHES.filter(m => {
+    const md = getMatchDate(m.date);
+    return sameCalendarDay(md, today) || sameCalendarDay(md, tomorrow);
+  });
+
+  if (todayAndTomorrow.length > 0) return todayAndTomorrow;
+
+  // Si no hay partidos hoy/mañana, muestra la próxima fecha disponible completa.
+  const future = MATCHES
+    .filter(m => {
+      const md = getMatchDate(m.date);
+      return md && md >= today;
+    })
+    .sort((a, b) => getMatchDate(a.date) - getMatchDate(b.date));
+
+  if (!future.length) return [];
+  const nextDate = future[0].date;
+  return MATCHES.filter(m => m.date === nextDate);
+}
+
 function buildUpcoming() {
   const wrap = document.getElementById('upcoming-section');
   if (!wrap) return;
 
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dayAfterTomorrow = new Date(today);
-  dayAfterTomorrow.setDate(today.getDate() + 2);
-
-  const upcoming = MATCHES.filter(m => {
-    const d = getMatchDate(m.date);
-    if (!d) return false;
-    const md = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    return md >= today && md < dayAfterTomorrow;
-  });
+  const upcoming = getUpcomingMatchesWindow();
 
   if (upcoming.length === 0) {
-    const future = MATCHES.filter(m => {
-      const d = getMatchDate(m.date);
-      if (!d) return false;
-      return new Date(d.getFullYear(), d.getMonth(), d.getDate()) >= today;
-    });
-    if (future.length === 0) {
-      wrap.innerHTML = '';
-      return;
-    }
-    const nextDate = future[0].date;
-    wrap.innerHTML = `<div class="upcoming-none">No hay partidos hoy ni mañana. Próximos: <strong>${nextDate}</strong></div>`;
+    wrap.innerHTML = '';
     return;
   }
+
+  const today = getTodayGuatemala();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
 
   const byDate = {};
   upcoming.forEach(m => {
@@ -1660,13 +1692,22 @@ function buildUpcoming() {
     byDate[m.date].push(m);
   });
 
+  let label = 'Hoy y mañana';
+  const dateKeys = Object.keys(byDate);
+  if (dateKeys.length === 1) {
+    const onlyDate = getMatchDate(dateKeys[0]);
+    if (sameCalendarDay(onlyDate, today)) label = 'Hoy';
+    else if (sameCalendarDay(onlyDate, tomorrow)) label = 'Mañana';
+    else label = `Próxima fecha: ${dateKeys[0]}`;
+  }
+
   let html = `<div class="upcoming-section">
     <div class="upcoming-header">
       <div class="upcoming-title">
         <span class="live-dot"></span>
         Próximos partidos
       </div>
-      <span class="upcoming-date-label">Hoy y mañana</span>
+      <span class="upcoming-date-label">${label}</span>
     </div>`;
 
   for (const [date, matches] of Object.entries(byDate)) {
@@ -1676,13 +1717,15 @@ function buildUpcoming() {
       const borderColor = isGuat ? '#1B5E20' : dc;
       const topBg = isGuat ? '#1B5E20' : dc;
       const guatTag = isGuat ? ' 🇬🇹' : '';
+
       const withPick = parts.filter(p => {
-        const pk = (p.picks || []).find(x => x.id === m.id);
+        const pk = (p.picks || []).find(x => String(x.id) === String(m.id));
         return pk && pk.gl !== '' && pk.gv !== '';
       }).length;
       const totalParts = parts.length;
       const picksLabel = totalParts > 0 ? `${withPick}/${totalParts} pronósticos` : 'Sin participantes aún';
-      const expandHint = showPublicPicks
+
+      const showPicksBtn = showPublicPicks
         ? `Ver pronósticos <span class="upcoming-chevron" id="uchev-${m.id}">▼</span>`
         : `<span style="color:var(--muted)">🔒 Pronósticos ocultos</span>`;
 
@@ -1690,23 +1733,23 @@ function buildUpcoming() {
         <div class="upcoming-card${isGuat ? ' guat' : ''}" style="border-left:3px solid ${borderColor}">
           <div class="upcoming-top" style="background:${topBg}">
             <span class="upcoming-match-date">${date}${guatTag}</span>
-            <span class="upcoming-venue">${m.venue || ''}</span>
+            <span class="upcoming-venue">${safeHtml(m.venue || '')}</span>
           </div>
           <div class="upcoming-body">
-            <div class="upcoming-team r"><span class="upcoming-flag">${m.lf}</span>${m.local}</div>
+            <div class="upcoming-team r"><span class="upcoming-flag">${m.lf}</span>${safeHtml(m.local)}</div>
             <div class="upcoming-vs">vs</div>
-            <div class="upcoming-team"><span class="upcoming-flag">${m.vf}</span>${m.visita}</div>
+            <div class="upcoming-team"><span class="upcoming-flag">${m.vf}</span>${safeHtml(m.visita)}</div>
           </div>
           <div class="upcoming-footer">
             <span class="upcoming-picks-count">⚽ ${picksLabel}</span>
-            <span class="upcoming-expand-hint" onclick="toggleUpcomingPicks(${m.id})">${expandHint}</span>
+            <span class="upcoming-expand-hint" onclick="event.stopPropagation();toggleUpcomingPicks(${m.id})">${showPicksBtn}</span>
           </div>
           <div class="upcoming-picks-panel" id="upanel-${m.id}">
             ${buildPicksPanel(m)}
           </div>
           <div style="padding:0 12px 0;border-top:1px solid var(--border)">
             <div style="display:flex;align-items:center;justify-content:flex-end;padding:6px 0">
-              <span class="upcoming-expand-hint" style="color:var(--gold)" onclick="toggleSimulator(${m.id})">
+              <span class="upcoming-expand-hint" style="color:var(--gold);cursor:pointer" onclick="event.stopPropagation();toggleSimulator(${m.id})">
                 🧮 Simular puntos <span class="upcoming-chevron" id="simchev-${m.id}">▼</span>
               </span>
             </div>
@@ -1736,7 +1779,7 @@ function buildPicksPanel(m) {
   </div>`;
 
   sorted.forEach((p, i) => {
-    const pk = (p.picks || []).find(x => x.id === m.id);
+    const pk = (p.picks || []).find(x => String(x.id) === String(m.id));
     const has = pk && pk.gl !== '' && pk.gv !== '';
     const av = AV_COLORS[i % AV_COLORS.length];
     const ini = p.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
@@ -1756,7 +1799,7 @@ function toggleUpcomingPicks(matchId) {
   const panel = document.getElementById('upanel-' + matchId);
   const chev = document.getElementById('uchev-' + matchId);
   if (!panel) return;
-  const m = MATCHES.find(x => x.id === matchId);
+  const m = MATCHES.find(x => String(x.id) === String(matchId));
   if (m) panel.innerHTML = buildPicksPanel(m);
   panel.classList.toggle('open');
   if (chev) chev.classList.toggle('open');
@@ -1765,15 +1808,15 @@ function toggleUpcomingPicks(matchId) {
 function buildSimulatorInner(m) {
   return `<div class="simulator-header">
       <span class="simulator-title">🧮 Simulador de puntos · ${m.lf} vs ${m.vf}</span>
-      <button class="simulator-close" onclick="toggleSimulator(${m.id})">✕</button>
+      <button type="button" class="simulator-close" onclick="event.stopPropagation();toggleSimulator(${m.id})">✕</button>
     </div>
     <div class="sim-input-row">
-      <span class="sim-label">${m.lf} ${m.local}</span>
-      <input class="sim-score-box" type="number" id="simgl-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric">
+      <span class="sim-label">${m.lf} ${safeHtml(m.local)}</span>
+      <input class="sim-score-box" type="number" id="simgl-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric" oninput="runSimulation(${m.id})">
       <span class="sim-dash">–</span>
-      <input class="sim-score-box" type="number" id="simgv-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric">
-      <span class="sim-label">${m.visita} ${m.vf}</span>
-      <button class="sim-btn" onclick="runSimulation(${m.id})">Calcular</button>
+      <input class="sim-score-box" type="number" id="simgv-${m.id}" min="0" max="20" placeholder="–" inputmode="numeric" oninput="runSimulation(${m.id})">
+      <span class="sim-label">${safeHtml(m.visita)} ${m.vf}</span>
+      <button type="button" class="sim-btn" onclick="event.stopPropagation();runSimulation(${m.id})">Calcular</button>
     </div>
     <div class="sim-results" id="simresults-${m.id}">
       <div class="sim-no-picks">Ingrese un marcador para ver los puntos hipotéticos. No se guarda ningún resultado.</div>
@@ -1787,30 +1830,37 @@ function toggleSimulator(matchId) {
   const isOpen = card.style.display !== 'none';
   card.style.display = isOpen ? 'none' : 'block';
   if (!isOpen) {
-    const m = MATCHES.find(x => x.id === matchId);
+    const m = MATCHES.find(x => String(x.id) === String(matchId));
     if (m) card.innerHTML = buildSimulatorInner(m);
+    setTimeout(() => document.getElementById('simgl-' + matchId)?.focus(), 50);
   }
   if (chev) chev.classList.toggle('open', !isOpen);
 }
 
 function runSimulation(matchId) {
-  const gl = document.getElementById('simgl-' + matchId)?.value;
-  const gv = document.getElementById('simgv-' + matchId)?.value;
-  if (gl === '' || gv === '' || gl == null || gv == null) return toast('Ingresa el resultado simulado');
-
+  const glEl = document.getElementById('simgl-' + matchId);
+  const gvEl = document.getElementById('simgv-' + matchId);
+  const gl = glEl?.value;
+  const gv = gvEl?.value;
   const resultsContainer = document.getElementById('simresults-' + matchId);
   if (!resultsContainer) return;
-  const m = MATCHES.find(x => x.id === matchId);
+
+  if (gl === '' || gv === '' || gl == null || gv == null) {
+    resultsContainer.innerHTML = `<div class="sim-no-picks">Ingrese ambos marcadores para calcular puntos hipotéticos.</div>`;
+    return;
+  }
+
+  const m = MATCHES.find(x => String(x.id) === String(matchId));
 
   const simParticipants = parts
     .filter(p => {
-      const pk = (p.picks || []).find(x => x.id === matchId);
+      const pk = (p.picks || []).find(x => String(x.id) === String(matchId));
       return pk && pk.gl !== '' && pk.gv !== '';
     })
     .map(p => {
-      const pk = (p.picks || []).find(x => x.id === matchId);
+      const pk = (p.picks || []).find(x => String(x.id) === String(matchId));
       const pts = calcPoints(pk.gl, pk.gv, gl, gv);
-      return { ...p, simPts: pts, pickGl: pk.gl, pickGv: pk.gv };
+      return { ...p, simPts: pts ?? 0, pickGl: pk.gl, pickGv: pk.gv };
     });
 
   if (!simParticipants.length) {
