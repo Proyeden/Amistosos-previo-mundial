@@ -298,6 +298,66 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 .picks-locked-msg{padding:12px;text-align:center;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
 
 .upcoming-none{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:1rem;text-align:center;font-size:12px;color:var(--muted);box-shadow:var(--shadow)}
+
+/* ── SIMULADOR DE PUNTOS (temporal, no guarda en Firebase) ── */
+.simulator-card{margin:0 12px 10px;border-top:2px solid var(--gold);background:#fffdf4;border-radius:0 0 var(--radius-sm) var(--radius-sm);overflow:hidden}
+.simulator-header{background:linear-gradient(135deg,#1A1A2E,#0F3460);padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
+.simulator-title{font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:5px}
+.sim-input-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff8e8;border-bottom:1px solid #fde68a;flex-wrap:wrap}
+.sim-label{font-size:11px;font-weight:600;color:#92400e;white-space:nowrap}
+.sim-score-box{width:40px;height:36px;border:2px solid #fbbf24;border-radius:6px;font-size:17px;font-weight:700;text-align:center;background:#fff;color:var(--navy);font-family:'DM Sans',sans-serif;-moz-appearance:textfield;appearance:textfield;-webkit-appearance:none}
+.sim-score-box::-webkit-inner-spin-button,.sim-score-box::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.sim-score-box:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(245,166,35,.2)}
+.sim-dash{font-size:14px;font-weight:800;color:#d97706}
+.sim-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:8px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
+.sim-btn:hover{background:#e09210;transform:translateY(-1px)}
+.sim-results{overflow:hidden}
+.sim-results-header{padding:6px 12px;background:#1A1A2E;display:flex;justify-content:space-between;align-items:center}
+.sim-results-title{font-size:9px;font-weight:800;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.6px}
+.sim-results-hint{font-size:9px;color:rgba(255,255,255,.35)}
+.sim-row{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid #fef9ec;font-size:12px;transition:.15s}
+.sim-row:last-child{border-bottom:none}
+.sim-row.me-row{background:#fff8e8;border-left:3px solid var(--gold)}
+.sim-row-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.sim-pos{font-size:10px;font-weight:800;color:var(--muted);width:18px;text-align:center;flex-shrink:0}
+.sim-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.sim-name{font-weight:600;color:var(--text);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sim-pts-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.sim-pick{font-size:11px;font-weight:800;color:var(--navy);background:#e0f2fe;padding:2px 8px;border-radius:7px;min-width:45px;text-align:center}
+.sim-pts-gain{font-size:10px;font-weight:800;border-radius:99px;padding:2px 8px;white-space:nowrap}
+.sim-pts-gain.gain-50{background:#dcfce7;color:#166534}
+.sim-pts-gain.gain-30{background:#dbeafe;color:#1e40af}
+.sim-pts-gain.gain-20{background:#fef9c3;color:#854d0e}
+.sim-pts-gain.gain-10{background:#fce7f3;color:#9d174d}
+.sim-pts-gain.gain-0{background:#f1f5f9;color:#94a3b8}
+.sim-no-picks{padding:10px 12px;font-size:11px;color:var(--muted);text-align:center;font-style:italic}
+
+/* ── SCORING LEGEND ── */
+.scoring-legend{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;overflow:hidden;box-shadow:var(--shadow)}
+.scoring-legend-head{padding:8px 14px;background:linear-gradient(90deg,var(--navy),var(--navy3));display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.scoring-legend-title{font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
+.scoring-legend-body{display:none;padding:8px 0}
+.scoring-legend-body.open{display:block}
+.score-rule{display:flex;align-items:center;gap:10px;padding:6px 14px;border-bottom:1px solid #f5f5f0}
+.score-rule:last-child{border-bottom:none}
+.score-rule-pts{font-size:16px;font-weight:800;color:var(--navy);font-family:'Bebas Neue',sans-serif;width:42px;flex-shrink:0;letter-spacing:.5px}
+.score-rule-stars{font-size:12px;width:60px;flex-shrink:0}
+.score-rule-desc{font-size:11px;color:var(--text);flex:1;line-height:1.45}
+.score-rule-ex{font-size:10px;color:var(--muted);margin-top:1px}
+@media(prefers-color-scheme:dark){
+  .simulator-card{background:#1a1d25;border-top-color:var(--gold)}
+  .sim-input-row{background:#1e1a0e;border-bottom-color:#4a3800}
+  .sim-label{color:#d4a04a}
+  .sim-score-box{background:#252007;color:#E8E8F0;border-color:#a07030}
+  .sim-row{border-bottom-color:#252830}
+  .sim-row.me-row{background:#1e1a07}
+  .sim-pick{background:#1E3A5F;color:#93C5FD}
+  .scoring-legend{background:#1E2128;border-color:#2E3240}
+  .scoring-legend-head{background:linear-gradient(90deg,#0d1120,#162040)}
+  .score-rule{border-bottom-color:#2E3240}
+  .score-rule-desc{color:#E8E8F0}
+}
+
 </style>
 </head>
 <body>
@@ -373,6 +433,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 
     <!-- PRÓXIMOS PARTIDOS (se renderiza por JS) -->
     <div id="upcoming-section"></div>
+
+
+
+    <!-- TABLA DE PUNTUACIÓN (solo informativa; no guarda resultados) -->
+    <div class="scoring-legend" id="scoring-legend">
+      <div class="scoring-legend-head" onclick="toggleScoringLegend()">
+        <span class="scoring-legend-title">🏆 Sistema de puntuación</span>
+        <span class="chev" id="scoring-chev">▼</span>
+      </div>
+      <div class="scoring-legend-body" id="scoring-body">
+        <div class="score-rule">
+          <div class="score-rule-pts">50</div><div class="score-rule-stars">⭐⭐⭐⭐</div>
+          <div><div class="score-rule-desc">Resultado <strong>EXACTO</strong> (ambos goles correctos)</div><div class="score-rule-ex">Pronosticas 2-1 → Sale 2-1</div></div>
+        </div>
+        <div class="score-rule">
+          <div class="score-rule-pts">30</div><div class="score-rule-stars">⭐⭐⭐</div>
+          <div><div class="score-rule-desc">Ganador correcto <strong>+ 1 gol exacto</strong></div><div class="score-rule-ex">Pronosticas 2-1 → Sale 3-1</div></div>
+        </div>
+        <div class="score-rule">
+          <div class="score-rule-pts">20</div><div class="score-rule-stars">⭐⭐</div>
+          <div><div class="score-rule-desc">Solo <strong>ganador o empate</strong> correcto</div><div class="score-rule-ex">Pronosticas 2-1 → Sale 3-2</div></div>
+        </div>
+        <div class="score-rule">
+          <div class="score-rule-pts">10</div><div class="score-rule-stars">⭐</div>
+          <div><div class="score-rule-desc">1 equipo con <strong>goles exactos</strong> sin acertar ganador</div><div class="score-rule-ex">Pronosticas 2-1 → Sale 2-3</div></div>
+        </div>
+        <div class="score-rule">
+          <div class="score-rule-pts">0</div><div class="score-rule-stars">✕</div>
+          <div><div class="score-rule-desc">Nada correcto</div><div class="score-rule-ex">Pronosticas 2-1 → Sale 0-3</div></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Nombre -->
     <div class="name-card">
@@ -1619,13 +1711,29 @@ function buildPicksPanel(m) {
     <span class="picks-panel-locked">${sorted.length} participantes</span>
   </div>`;
 
+  html += `<div class="simulator-card" onclick="event.stopPropagation()">
+    <div class="simulator-header">
+      <div class="simulator-title">🧮 Simulador temporal de puntos</div>
+    </div>
+    <div class="sim-input-row">
+      <span class="sim-label">Marcador simulado:</span>
+      <input class="sim-score-box" type="number" min="0" max="20" placeholder="${m.lf}" id="sim-gl-${m.id}" inputmode="numeric" onkeydown="if(event.key==='Enter') runSimulation(${m.id})">
+      <span class="sim-dash">–</span>
+      <input class="sim-score-box" type="number" min="0" max="20" placeholder="${m.vf}" id="sim-gv-${m.id}" inputmode="numeric" onkeydown="if(event.key==='Enter') runSimulation(${m.id})">
+      <button class="sim-btn" onclick="runSimulation(${m.id})">Calcular</button>
+    </div>
+    <div class="sim-results" id="sim-results-${m.id}">
+      <div class="sim-no-picks">Ingrese un marcador para ver los puntos hipotéticos. No se guarda ningún resultado.</div>
+    </div>
+  </div>`;
+
   sorted.forEach((p, i) => {
     const pk = (p.picks||[]).find(x => x.id === m.id);
     const has = pk && pk.gl !== '' && pk.gv !== '';
     const av = AV_COLORS[i % AV_COLORS.length];
     const ini = p.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     html += `<div class="pick-participant-row">
-      <div style="display:flex;align-items:center;gap:8px;flex:1">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
         <div style="width:28px;height:28px;border-radius:50%;background:${av.bg};color:${av.c};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${ini}</div>
         <span class="pick-participant-name">${p.name}</span>
       </div>
@@ -1634,6 +1742,51 @@ function buildPicksPanel(m) {
   });
 
   return html;
+}
+
+function runSimulation(matchId) {
+  const realGl = document.getElementById('sim-gl-' + matchId)?.value;
+  const realGv = document.getElementById('sim-gv-' + matchId)?.value;
+  const target = document.getElementById('sim-results-' + matchId);
+  if (!target) return;
+
+  if (realGl === '' || realGv === '' || realGl == null || realGv == null) {
+    target.innerHTML = `<div class="sim-no-picks">Ingrese ambos marcadores para calcular la simulación.</div>`;
+    return;
+  }
+
+  const rows = parts.map((p, idx) => {
+    const pk = (p.picks || []).find(x => x.id === matchId);
+    const has = pk && pk.gl !== '' && pk.gv !== '';
+    const pts = has ? calcPoints(pk.gl, pk.gv, realGl, realGv) : null;
+    return { participant:p, originalIndex:idx, pick:pk, has, pts };
+  }).filter(r => r.has && r.pts !== null)
+    .sort((a,b) => b.pts - a.pts || a.participant.name.localeCompare(b.participant.name));
+
+  if (!rows.length) {
+    target.innerHTML = `<div class="sim-no-picks">No hay pronósticos completos para este partido.</div>`;
+    return;
+  }
+
+  target.innerHTML = `<div class="sim-results-header">
+    <span class="sim-results-title">Resultado simulado: ${realGl} – ${realGv}</span>
+    <span class="sim-results-hint">Solo visual · no se guarda</span>
+  </div>` + rows.map((r, i) => {
+    const av = AV_COLORS[r.originalIndex % AV_COLORS.length];
+    const ini = r.participant.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const isMe = me && r.participant.name.toLowerCase() === me.toLowerCase();
+    return `<div class="sim-row${isMe ? ' me-row' : ''}">
+      <div class="sim-row-left">
+        <span class="sim-pos">${i + 1}</span>
+        <div class="sim-av" style="background:${av.bg};color:${av.c}">${ini}</div>
+        <span class="sim-name">${r.participant.name}</span>
+      </div>
+      <div class="sim-pts-wrap">
+        <span class="sim-pick">${r.pick.gl} – ${r.pick.gv}</span>
+        <span class="sim-pts-gain ${pointsClass(r.pts)}">+${r.pts} pts</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function toggleUpcomingPicks(matchId) {
