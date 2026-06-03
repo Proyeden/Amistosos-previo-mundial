@@ -200,8 +200,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 .sim-score-box::-webkit-inner-spin-button,.sim-score-box::-webkit-outer-spin-button{-webkit-appearance:none}
 .sim-score-box:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(245,166,35,.2)}
 .sim-dash{font-size:14px;font-weight:800;color:#d97706}
-.sim-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:8px 14px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
-.sim-btn:hover{background:#e09210;transform:translateY(-1px)}
 .sim-results{overflow:hidden}
 .sim-results-header{padding:6px 12px;background:#1A1A2E;display:flex;justify-content:space-between;align-items:center}
 .sim-results-title{font-size:9px;font-weight:800;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.6px}
@@ -232,7 +230,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
   .sim-teams-line{justify-content:center}
   .sim-label{white-space:normal;text-align:center;font-size:10px;max-width:92px;line-height:1.2}
   .sim-score-box{width:44px;height:38px;flex-shrink:0}
-  .sim-btn{width:100%;padding:11px 14px;font-size:12px;margin-top:2px}
   .sim-results-header{display:block;text-align:center}
   .sim-results-hint{display:block;margin-top:3px}
 }
@@ -1793,7 +1790,7 @@ function buildSimulatorInner(m) {
         <span class="sim-label">${m.visita} ${m.vf}</span>
       </div>
       <div class="sim-action-line">
-        <button type="button" class="sim-btn" data-sim-calc="${m.id}">Calcular</button>
+        <span style="font-size:10px;color:#92400e;font-weight:700;text-align:center">La simulación se actualiza automáticamente</span>
       </div>
     </div>
     <div class="sim-results" id="simresults-${m.id}"></div>`;
