@@ -322,7 +322,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
     <h1>QUINIELA<br><span>AMISTOSOS</span></h1>
     <p class="hero-sub">Amistosos previos · 23 partidos · Pronóstico privado</p>
     <div class="hero-sedes">
-      <span class="sede-flag">🇺🇸</span> Guatemala &nbsp;·&nbsp;
+      <span class="sede-flag">🇬🇹</span> Guatemala &nbsp;·&nbsp;
       <span class="sede-flag">🌎</span> Selecciones mundialistas &nbsp;·&nbsp;
       <span class="sede-flag">🏟️</span> Amistosos
     </div>
@@ -1534,6 +1534,131 @@ function toggleUpcomingPicks(matchId) {
   if (chev) chev.classList.toggle('open');
 }
 
+
+// ══════════════════════════════════════════
+//  SIMULADOR DE PUNTOS
+// ══════════════════════════════════════════
+
+function buildSimulatorInner(m) {
+  return `<div class="simulator-header">
+    <span class="simulator-title">🧮 Simulador · ${m.lf} ${m.local} vs ${m.visita} ${m.vf}</span>
+  </div>
+  <div class="sim-input-row">
+    <div class="sim-teams-line">
+      <span class="sim-label">${m.lf} ${m.local}</span>
+      <input class="sim-score-box" type="number" id="simgl-${m.id}" min="0" max="20"
+        placeholder="–" inputmode="decimal" pattern="[0-9]*" data-sim-input="${m.id}"
+        oninput="onSimInput(${m.id})">
+      <span class="sim-dash">–</span>
+      <input class="sim-score-box" type="number" id="simgv-${m.id}" min="0" max="20"
+        placeholder="–" inputmode="decimal" pattern="[0-9]*" data-sim-input="${m.id}"
+        oninput="onSimInput(${m.id})">
+      <span class="sim-label">${m.visita} ${m.vf}</span>
+    </div>
+    <div class="sim-action-line">
+      <span style="font-size:10px;color:#92400e;font-weight:600">Los puntos se calculan automáticamente</span>
+    </div>
+  </div>
+  <div class="sim-results" id="simresults-${m.id}">
+    <div class="sim-no-picks">Ingresa un marcador hipotético para calcular</div>
+  </div>`;
+}
+
+function onSimInput(matchId) {
+  const gl = document.getElementById('simgl-' + matchId);
+  const gv = document.getElementById('simgv-' + matchId);
+  if (gl && gv && gl.value !== '' && gv.value !== '') {
+    runSimulation(matchId);
+  }
+}
+
+function runSimulation(matchId) {
+  const id = String(matchId);
+  const glEl = document.getElementById('simgl-' + id);
+  const gvEl = document.getElementById('simgv-' + id);
+  const resultsEl = document.getElementById('simresults-' + id);
+  const m = MATCHES.find(x => String(x.id) === id);
+
+  if (!resultsEl || !m) return;
+  if (!glEl || !gvEl || glEl.value === '' || gvEl.value === '') {
+    resultsEl.innerHTML = '<div class="sim-no-picks">Ingresa ambos goles para calcular</div>';
+    return;
+  }
+
+  const rl = glEl.value, rv = gvEl.value;
+
+  // Calcular puntos para cada participante que tiene pronóstico de este partido
+  const withPick = parts
+    .map(p => {
+      const pk = (p.picks || []).find(x => String(x.id) === id);
+      const hasPick = pk && pk.gl !== '' && pk.gv !== '' && pk.gl != null;
+      const pts = hasPick ? calcPoints(pk.gl, pk.gv, rl, rv) : null;
+      return { name: p.name, pickGl: hasPick ? pk.gl : null, pickGv: hasPick ? pk.gv : null, pts };
+    })
+    .sort((a, b) => (b.pts ?? -1) - (a.pts ?? -1) || a.name.localeCompare(b.name));
+
+  if (!withPick.length) {
+    resultsEl.innerHTML = '<div class="sim-no-picks">Sin participantes registrados</div>';
+    return;
+  }
+
+  // Resultado descripción
+  const ri = parseInt(rl), rv2 = parseInt(rv);
+  const resDesc = ri > rv2
+    ? `${m.lf} ${m.local} gana ${rl}–${rv}`
+    : ri < rv2
+    ? `${m.vf} ${m.visita} gana ${rl}–${rv}`
+    : `Empate ${rl}–${rv}`;
+
+  function gainClass(pts) {
+    if (pts === 50) return 'gain-50';
+    if (pts === 30) return 'gain-30';
+    if (pts === 20) return 'gain-20';
+    if (pts === 10) return 'gain-10';
+    return 'gain-0';
+  }
+  function gainLabel(pts) {
+    if (pts === 50) return '⭐⭐⭐⭐ +50 pts';
+    if (pts === 30) return '⭐⭐⭐ +30 pts';
+    if (pts === 20) return '⭐⭐ +20 pts';
+    if (pts === 10) return '⭐ +10 pts';
+    if (pts === 0) return '✕ +0 pts';
+    return '– sin pronóstico';
+  }
+
+  const medals = ['🥇','🥈','🥉'];
+
+  let html = `<div class="sim-results-header">
+    <span class="sim-results-title">${resDesc}</span>
+    <span class="sim-results-hint">Simulación — no afecta puntos reales</span>
+  </div>`;
+
+  let pos = 0;
+  let lastPts = null;
+  withPick.forEach((r, i) => {
+    const isMe = me && r.name.toLowerCase() === me.toLowerCase();
+    const av = AV_COLORS[i % AV_COLORS.length];
+    const ini = r.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    if (r.pts !== lastPts) { pos = i + 1; lastPts = r.pts; }
+    const pickStr = r.pickGl !== null ? `${r.pickGl}–${r.pickGv}` : 'sin pronóstico';
+    html += `<div class="sim-row${isMe ? ' me-row' : ''}">
+      <div class="sim-row-left">
+        <span class="sim-pos">${r.pts !== null ? (medals[pos-1] || pos) : '–'}</span>
+        <div class="sim-av" style="background:${av.bg};color:${av.c}">${ini}</div>
+        <div>
+          <div class="sim-name">${r.name}${isMe ? ' 👤' : ''}</div>
+          <div style="font-size:10px;color:var(--muted)">Pronóstico: ${pickStr}</div>
+        </div>
+      </div>
+      <div class="sim-pts-wrap">
+        <span class="sim-pts-gain ${r.pts !== null ? gainClass(r.pts) : 'gain-0'}">${gainLabel(r.pts)}</span>
+      </div>
+    </div>`;
+  });
+
+  resultsEl.innerHTML = html;
+}
+
 // Delegación de eventos para simulador
 document.addEventListener('click', function(ev) {
   const btn = ev.target.closest('[data-sim-toggle]');
@@ -1554,7 +1679,7 @@ document.addEventListener('input', function(ev) {
   if (!matchId) return;
   const gl = document.getElementById('simgl-' + matchId)?.value;
   const gv = document.getElementById('simgv-' + matchId)?.value;
-  if (gl !== '' && gv !== '') runSimulation(matchId);
+  if (gl !== '' && gv !== '') onSimInput(matchId);
 });
 
 // ══════════════════════════════════════════
