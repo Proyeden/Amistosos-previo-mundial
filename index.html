@@ -266,60 +266,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 .picks-locked-msg{padding:12px;text-align:center;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
 .upcoming-none{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:1rem;text-align:center;font-size:12px;color:var(--muted);box-shadow:var(--shadow)}
 
-/* ── SIMULADOR DE PUNTOS ── */
-.simulator-card{border-top:2px solid var(--gold);background:#fffdf4;overflow:hidden}
-.simulator-header{background:linear-gradient(135deg,#1A1A2E,#0F3460);padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
-.simulator-title{font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:5px}
-.simulator-close{background:none;border:none;color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;line-height:1;padding:2px 5px;border-radius:4px}
-.simulator-close:hover{color:#fff;background:rgba(255,255,255,.1)}
-.sim-input-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff8e8;border-bottom:1px solid #fde68a;flex-wrap:wrap}
-.sim-teams-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
-.sim-action-line{display:flex;justify-content:center;width:100%;margin-top:4px}
-.sim-label{font-size:11px;font-weight:600;color:#92400e;white-space:nowrap;max-width:92px;line-height:1.2}
-.sim-score-box{width:40px;height:36px;border:2px solid #fbbf24;border-radius:6px;font-size:17px;font-weight:700;text-align:center;background:#fff;color:var(--navy);font-family:'DM Sans',sans-serif;-moz-appearance:textfield;appearance:textfield;-webkit-appearance:none}
-.sim-score-box::-webkit-inner-spin-button,.sim-score-box::-webkit-outer-spin-button{-webkit-appearance:none}
-.sim-score-box:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(245,166,35,.2)}
-.sim-dash{font-size:14px;font-weight:800;color:#d97706}
-.sim-results{overflow:hidden}
-.sim-results-header{padding:6px 12px;background:#1A1A2E;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:3px}
-.sim-results-title{font-size:9px;font-weight:800;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.6px}
-.sim-results-hint{font-size:9px;color:rgba(255,255,255,.35)}
-.sim-row{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid #fef9ec;font-size:12px}
-.sim-row:last-child{border-bottom:none}
-.sim-row.me-row{background:#fff8e8;border-left:3px solid var(--gold)}
-.sim-row-left{display:flex;align-items:center;gap:8px;flex:1}
-.sim-pos{font-size:10px;font-weight:800;color:var(--muted);width:16px;text-align:center;flex-shrink:0}
-.sim-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.sim-name{font-weight:600;color:var(--text);font-size:12px}
-.sim-pts-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.sim-pts-gain{font-size:10px;font-weight:700;border-radius:99px;padding:1px 7px;white-space:nowrap}
-.sim-pts-gain.gain-50{background:#dcfce7;color:#166534}
-.sim-pts-gain.gain-30{background:#dbeafe;color:#1e40af}
-.sim-pts-gain.gain-20{background:#fef9c3;color:#854d0e}
-.sim-pts-gain.gain-10{background:#fce7f3;color:#9d174d}
-.sim-pts-gain.gain-0{background:#f1f5f9;color:#94a3b8}
-.sim-no-picks{padding:10px 12px;font-size:11px;color:var(--muted);text-align:center;font-style:italic}
-@media(max-width:480px){
-  .sim-input-row{flex-direction:column;align-items:stretch;gap:8px;padding:10px 12px}
-  .sim-teams-line{justify-content:center}
-  .sim-label{text-align:center}
-  .sim-results-header{display:block;text-align:center}
-  .sim-results-hint{display:block;margin-top:3px}
-}
-
-/* ── SCORING LEGEND ── */
-.scoring-legend{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;overflow:hidden;box-shadow:var(--shadow)}
-.scoring-legend-head{padding:8px 14px;background:linear-gradient(90deg,var(--navy),var(--navy3));display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
-.scoring-legend-title{font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
-.scoring-legend-body{display:none;padding:8px 0}
-.scoring-legend-body.open{display:block}
-.score-rule{display:flex;align-items:center;gap:10px;padding:6px 14px;border-bottom:1px solid #f5f5f0}
-.score-rule:last-child{border-bottom:none}
-.score-rule-pts{font-size:16px;font-weight:800;color:var(--navy);font-family:'Bebas Neue',sans-serif;width:42px;flex-shrink:0;letter-spacing:.5px}
-.score-rule-stars{font-size:12px;width:60px;flex-shrink:0}
-.score-rule-desc{font-size:11px;color:var(--text);flex:1;line-height:1.45}
-.score-rule-ex{font-size:10px;color:var(--muted);margin-top:1px}
-
 /* ── DARK MODE ── */
 @media(prefers-color-scheme:dark){
   :root{--light:#111318;--card:#1E2128;--border:#2E3240;--text:#E8E8F0;--muted:#6B7280}
@@ -338,16 +284,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
   .mypick-row,.pick-participant-row{border-bottom-color:#2E3240}
   .mypick-score{background:#1E3A5F;color:#93C5FD}
   .upcoming-picks-panel{background:#252830}
-  .simulator-card{background:#1a1d25;border-top-color:#c07800}
-  .sim-input-row{background:#1e1a0a;border-bottom-color:#4a3800}
-  .sim-label{color:#d4a044}
-  .sim-score-box{background:#252007;color:#E8E8F0;border-color:#a07030}
-  .sim-dash{color:#d97706}
-  .sim-row{border-bottom-color:#252830}
-  .sim-row.me-row{background:#1e1a07;border-left-color:var(--gold)}
-  .score-rule{border-bottom-color:#2E3240}
-  .score-rule-desc{color:#E8E8F0}
-  .score-rule-pts{color:#E8E8F0}
 }
 </style>
 </head>
@@ -386,7 +322,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
     <h1>QUINIELA<br><span>AMISTOSOS</span></h1>
     <p class="hero-sub">Amistosos previos · 23 partidos · Pronóstico privado</p>
     <div class="hero-sedes">
-      <span class="sede-flag">🇬🇹</span> Guatemala &nbsp;·&nbsp;
+      <span class="sede-flag">🇺🇸</span> Guatemala &nbsp;·&nbsp;
       <span class="sede-flag">🌎</span> Selecciones mundialistas &nbsp;·&nbsp;
       <span class="sede-flag">🏟️</span> Amistosos
     </div>
@@ -414,24 +350,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);
 <!-- ══════════════════ PAGE: FORM ══════════════════ -->
 <div class="page active" id="page-form">
   <div class="wrap">
-
-    <!-- PRÓXIMOS PARTIDOS (se renderiza por JS) -->
-    <div id="upcoming-section"></div>
-
-    <!-- TABLA DE PUNTUACIÓN (colapsable) -->
-    <div class="scoring-legend" id="scoring-legend">
-      <div class="scoring-legend-head" onclick="toggleScoringLegend()">
-        <span class="scoring-legend-title">🏆 Sistema de Puntuación</span>
-        <span class="chev" id="scoring-chev">▼</span>
-      </div>
-      <div class="scoring-legend-body" id="scoring-body">
-        <div class="score-rule"><div class="score-rule-pts">50</div><div class="score-rule-stars">⭐⭐⭐⭐</div><div><div class="score-rule-desc">Resultado <strong>EXACTO</strong> (ambos goles correctos)</div><div class="score-rule-ex">Pronostica 2-1 → Sale 2-1</div></div></div>
-        <div class="score-rule"><div class="score-rule-pts">30</div><div class="score-rule-stars">⭐⭐⭐</div><div><div class="score-rule-desc">Ganador correcto <strong>+ 1 gol exacto</strong></div><div class="score-rule-ex">Pronostica 2-1 → Sale 3-1</div></div></div>
-        <div class="score-rule"><div class="score-rule-pts">20</div><div class="score-rule-stars">⭐⭐</div><div><div class="score-rule-desc">Solo <strong>ganador o empate</strong> correcto</div><div class="score-rule-ex">Pronostica 2-1 → Sale 3-2</div></div></div>
-        <div class="score-rule"><div class="score-rule-pts">10</div><div class="score-rule-stars">⭐</div><div><div class="score-rule-desc">1 equipo con <strong>goles exactos</strong> sin acertar ganador</div><div class="score-rule-ex">Pronostica 2-1 → Sale 2-3</div></div></div>
-        <div class="score-rule"><div class="score-rule-pts">0</div><div class="score-rule-stars">✕</div><div><div class="score-rule-desc">Nada correcto</div><div class="score-rule-ex">Pronostica 2-1 → Sale 0-3</div></div></div>
-      </div>
-    </div>
 
     <!-- Nombre -->
     <div class="name-card">
@@ -841,14 +759,6 @@ function syncBadges() {
   const mt = document.getElementById('st-matches'); if (mt) mt.textContent = TOTAL_MATCHES;
 }
 
-function toggleScoringLegend() {
-  const body = document.getElementById('scoring-body');
-  const chev = document.getElementById('scoring-chev');
-  if (!body || !chev) return;
-  body.classList.toggle('open');
-  chev.classList.toggle('open');
-}
-
 // ── NAVIGATION ──
 function goPage(p) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -867,9 +777,6 @@ function startForm() {
   const n = document.getElementById('inp-name').value.trim();
   if (!n) { document.getElementById('inp-name').focus(); return; }
   me = n;
-
-  // Refrescar próximos partidos con el nombre ya definido (para el simulador)
-  buildUpcoming();
 
   if (LOCKED) {
     document.getElementById('locked-msg').style.display = 'block';
@@ -1627,132 +1534,6 @@ function toggleUpcomingPicks(matchId) {
   if (chev) chev.classList.toggle('open');
 }
 
-// ══════════════════════════════════════════
-//  SISTEMA DE PUNTUACIÓN
-// ══════════════════════════════════════════
-function getPickForMatch(participant, matchId) {
-  return (participant.picks || []).find(p => String(p.id) === String(matchId));
-}
-
-function calcPoints(myGl, myGv, realGl, realGv) {
-  const ml = parseInt(myGl, 10), mv = parseInt(myGv, 10);
-  const rl = parseInt(realGl, 10), rv = parseInt(realGv, 10);
-  if (isNaN(ml) || isNaN(mv) || isNaN(rl) || isNaN(rv)) return null;
-  const exactLocal  = ml === rl;
-  const exactVisita = mv === rv;
-  const myWinner    = ml > mv ? 'L' : ml < mv ? 'V' : 'E';
-  const realWinner  = rl > rv ? 'L' : rl < rv ? 'V' : 'E';
-  const winnerOk    = myWinner === realWinner;
-  if (exactLocal && exactVisita) return 50;
-  if (winnerOk && (exactLocal || exactVisita)) return 30;
-  if (winnerOk) return 20;
-  if (exactLocal || exactVisita) return 10;
-  return 0;
-}
-
-function buildSimulatorInner(m) {
-  const id = String(m.id);
-  return `<div class="simulator-header">
-    <span class="simulator-title">🧮 Simular resultado · ${m.lf} ${m.local} vs ${m.visita} ${m.vf}</span>
-    <button type="button" class="simulator-close" data-sim-toggle="${id}">✕</button>
-  </div>
-  <div class="sim-input-row">
-    <div class="sim-teams-line">
-      <span class="sim-label">${m.lf} ${m.local}</span>
-      <input class="sim-score-box" type="number" id="simgl-${id}" min="0" max="20" placeholder="–"
-        inputmode="numeric" data-sim-input="${id}">
-      <span class="sim-dash">–</span>
-      <input class="sim-score-box" type="number" id="simgv-${id}" min="0" max="20" placeholder="–"
-        inputmode="numeric" data-sim-input="${id}">
-      <span class="sim-label">${m.visita} ${m.vf}</span>
-    </div>
-    <div class="sim-action-line">
-      <span style="font-size:10px;color:#92400e;font-weight:600;text-align:center">
-        Los puntos se calculan automáticamente al ingresar el marcador
-      </span>
-    </div>
-  </div>
-  <div id="simresults-${id}">
-    <div class="sim-no-picks" style="padding:10px 12px;font-style:italic;color:var(--muted)">
-      Ingresa ambos goles para ver cómo quedarían los puntos.
-    </div>
-  </div>`;
-}
-
-function runSimulation(matchId) {
-  const id = String(matchId);
-  const glEl = document.getElementById('simgl-' + id);
-  const gvEl = document.getElementById('simgv-' + id);
-  const out  = document.getElementById('simresults-' + id);
-  if (!glEl || !gvEl || !out) return;
-
-  const gl = glEl.value.trim(), gv = gvEl.value.trim();
-  if (gl === '' || gv === '') return;
-
-  const m = MATCHES.find(x => String(x.id) === id);
-  if (!m) return;
-
-  if (!parts.length) {
-    out.innerHTML = `<div class="sim-no-picks">Aún no hay participantes registrados.</div>`;
-    return;
-  }
-
-  const rows = parts.map(p => {
-    const pk = getPickForMatch(p, id);
-    const hasPick = pk && pk.gl !== '' && pk.gv !== '';
-    const pts = hasPick ? calcPoints(pk.gl, pk.gv, gl, gv) : null;
-    const isMe = me && p.name.toLowerCase() === me.toLowerCase();
-    return { p, hasPick, pts: pts ?? 0, isMe, pickStr: hasPick ? `${pk.gl} – ${pk.gv}` : null };
-  });
-
-  const withPick  = rows.filter(r => r.hasPick).sort((a, b) => b.pts - a.pts || a.p.name.localeCompare(b.p.name));
-  const noPick    = rows.filter(r => !r.hasPick);
-
-  const gainClass = pts => { if (pts===50) return 'gain-50'; if (pts===30) return 'gain-30'; if (pts===20) return 'gain-20'; if (pts===10) return 'gain-10'; return 'gain-0'; };
-  const gainLabel = pts => { if (pts===50) return '⭐⭐⭐⭐ +50 pts'; if (pts===30) return '⭐⭐⭐ +30 pts'; if (pts===20) return '⭐⭐ +20 pts'; if (pts===10) return '⭐ +10 pts'; return '✕ +0 pts'; };
-
-  const glN = parseInt(gl), gvN = parseInt(gv);
-  const winnerTxt = glN > gvN ? `Gana ${m.lf} ${m.local}` : glN < gvN ? `Gana ${m.vf} ${m.visita}` : 'Empate';
-
-  let html = `<div class="sim-results-header">
-    <span class="sim-results-title">${m.lf} ${safeHtml(gl)} – ${safeHtml(gv)} ${m.vf} · ${winnerTxt}</span>
-    <span class="sim-results-hint">Solo tú ves esto 🔒</span>
-  </div>`;
-
-  if (!withPick.length) {
-    html += `<div class="sim-no-picks">Ningún participante tiene pronóstico para este partido aún.</div>`;
-  } else {
-    let pos = 1;
-    withPick.forEach((r, i) => {
-      if (i > 0 && r.pts < withPick[i-1].pts) pos = i + 1;
-      const av  = AV_COLORS[parts.indexOf(r.p) % AV_COLORS.length];
-      const ini = r.p.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-      const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : '#' + pos;
-      html += `<div class="sim-row${r.isMe ? ' me-row' : ''}">
-        <div class="sim-row-left">
-          <span class="sim-pos">${medal}</span>
-          <div class="sim-av" style="background:${av.bg};color:${av.c}">${ini}</div>
-          <div>
-            <div class="sim-name">${safeHtml(r.p.name)}${r.isMe ? ' 👤' : ''}</div>
-            <div style="font-size:10px;color:var(--muted)">Pronóstico: ${r.pickStr}</div>
-          </div>
-        </div>
-        <div class="sim-pts-wrap">
-          <span class="sim-pts-gain ${gainClass(r.pts)}">${gainLabel(r.pts)}</span>
-        </div>
-      </div>`;
-    });
-  }
-
-  if (noPick.length) {
-    html += `<div style="padding:6px 12px;font-size:10px;color:var(--muted);background:#fafafa;border-top:1px solid #f0f0eb">
-      Sin pronóstico: ${noPick.map(r => safeHtml(r.p.name)).join(', ')}
-    </div>`;
-  }
-
-  out.innerHTML = html;
-}
-
 // Delegación de eventos para simulador
 document.addEventListener('click', function(ev) {
   const btn = ev.target.closest('[data-sim-toggle]');
@@ -1901,6 +1682,8 @@ let hasUnsavedChanges = false;
 window.addEventListener('beforeunload', e => { if (hasUnsavedChanges) { e.preventDefault(); e.returnValue=''; } });
 
 
+
+
 // ── TOAST ──
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -1915,3 +1698,23 @@ setTimeout(buildUpcoming, 150);
 </script>
 </body>
 </html>
+// ── CÁLCULO DE PUNTOS ──
+function calcPoints(myGl, myGv, realGl, realGv) {
+  const ml = parseInt(myGl, 10), mv = parseInt(myGv, 10);
+  const rl = parseInt(realGl, 10), rv = parseInt(realGv, 10);
+  if (isNaN(ml) || isNaN(mv) || isNaN(rl) || isNaN(rv)) return null;
+  const exactLocal  = ml === rl;
+  const exactVisita = mv === rv;
+  const myWinner  = ml > mv ? 'L' : ml < mv ? 'V' : 'E';
+  const realWinner = rl > rv ? 'L' : rl < rv ? 'V' : 'E';
+  const winnerOk  = myWinner === realWinner;
+  if (exactLocal && exactVisita) return 50;
+  if (winnerOk && (exactLocal || exactVisita)) return 30;
+  if (winnerOk) return 20;
+  if (exactLocal || exactVisita) return 10;
+  return 0;
+}
+
+function getPickForMatch(participant, matchId) {
+  return (participant.picks || []).find(p => String(p.id) === String(matchId));
+}
